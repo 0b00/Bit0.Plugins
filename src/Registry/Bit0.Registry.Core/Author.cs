@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace Bit0.Registry.Core
 {
+    [ExcludeFromCodeCoverageAttribute]
     public class Author
     {
         [JsonProperty("name")]

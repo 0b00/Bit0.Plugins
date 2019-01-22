@@ -6,10 +6,16 @@ namespace Bit0.Registry.Core
     public interface IPackageManager
     {
         void AddFeed(KeyValuePair<String, String> feeds);
-        void AddFeed(IDictionary<String, String> feeds);
         IEnumerable<Package> Find(String name);
+        Package GetPackage(String name, String semVer);
+        PackageVersion GetPackageVersion(String name, String semVer);
+        PackageVersion GetPackageVersion(Package package, String semVer);
         IPack Get(String name, String semVer);
         IPack Get(Package package, String semVer);
+        IPack Get(PackageVersion packageVersion);
+        IPack Get(String url);
+        IEnumerable<IPack> GetWithDependancies(Package package);
+        IDictionary<String, String> GetDependancies(Package package);
         IEnumerable<Package> Packages { get; }
         IDictionary<String, PackageFeed> Feeds { get; }
     }

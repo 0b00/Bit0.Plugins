@@ -16,5 +16,6 @@ namespace Bit0.Registry.Core
         String Name { get; set; }
         IEnumerable<String> Tags { get; set; }
         String Version { get; set; }
+        IDictionary<String, String> Dependencies { get; set; }
     }
 }

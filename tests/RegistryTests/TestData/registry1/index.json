@@ -89,6 +89,40 @@
           "sha256": "E6628D78D5AE69512A2D46CF2113FA6C122C07F1ED29D37961E3152D5F74C167"
         }
       ]
+    },
+    {
+      "id": "test-package-5",
+      "name": "Test Package 5",
+      "type": "Plugin",
+      "deps": {
+        "test-package-1": "^1.0.1"
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "url": "http://feed1.test/packages/test-package-5/test-package-5-1.0.0.zip",
+          "updated": "2019-01-17T14:06:12+00:00",
+          "size": 462,
+          "sha256": "19F24AAB9020EAD18DA1F4278321F766427B699DD8007A64AE715413CC78C607"
+        }
+      ]
+    },
+    {
+      "id": "test-package-6",
+      "name": "Test Package 6",
+      "type": "Plugin",
+      "deps": {
+        "test-package-5": "^1.0.0"
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "url": "http://feed1.test/packages/test-package-6/test-package-6-1.0.0.zip",
+          "updated": "2019-01-17T14:06:12+00:00",
+          "size": 464,
+          "sha256": "ABF5F3388709FE0B512FB2184E4BBEA7C7ABCE81681FC774B0FA95A48CACCFEA"
+        }
+      ]
     }
   ]
 }

@@ -1,17 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace Bit0.Registry.Core
 {
     public class Package
     {
-        [JsonExtensionData]
-        private readonly IDictionary<String, JToken> _additionalData = new Dictionary<String, JToken>();
-
         [JsonProperty("id")]
         public String Id { get; set; }
         [JsonProperty("name")]
@@ -39,17 +34,13 @@ namespace Bit0.Registry.Core
         public IEnumerable<String> Tags { get; set; }
         [JsonProperty("features")]
         public IEnumerable<String> Features { get; set; }
-        [JsonIgnore]
-        public IEnumerable<Package> Dependencies { get; set; }
+        [JsonProperty("deps")]
+        public IDictionary<String, String> Dependencies { get; set; }
         [JsonProperty("versions")]
         public IEnumerable<PackageVersion> Versions { get; set; }
 
-        [OnDeserialized]
-        internal void OnDeserializedMethod(StreamingContext context)
-        {
-            // TODO: Dependencies
-
-            // var depsJson = _additionalData["deps"] as IDictionary<String, String>;
+        public override String ToString() {
+            return $"[{Id}] {Name}";
         }
     }
 }

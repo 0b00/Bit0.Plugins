@@ -1,4 +1,5 @@
 using Bit0.Registry.Core;
+using Bit0.Registry.Core.Exceptions;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
@@ -22,6 +23,20 @@ namespace RegistryTests
             _cacheDir = new DirectoryInfo(".packs");
         }
 
+        ~PackageManagerTest() {
+            if (_cacheDir.Exists)
+            {
+                _cacheDir.Delete(recursive: true);
+            }
+        }
+
+        private PackageManager GetManager()
+        {
+            var manager = new PackageManager(_cacheDir, _logger);
+            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
+            return manager;
+        }
+
         [Fact]
         public void AddNonExistingFeed()
         {
@@ -29,7 +44,8 @@ namespace RegistryTests
             var name = "default";
             var url = "http://feed/";
 
-            manager.AddFeed(new KeyValuePair<String, String>(name, url));
+            Action action = () => manager.AddFeed(new KeyValuePair<String, String>(name, url));
+            action.Should().Throw<InvalidFeedException>();
 
             _logger.Last.EventId.Id.Should().Be(3001);
             _logger.Last.Message.Should().Be($"Could load package feed: {url}");
@@ -51,42 +67,25 @@ namespace RegistryTests
             feed.Value.Id.Should().Be("http://feed1.test/");
             feed.Value.Updated.Should().Be(DateTime.Parse("2018-12-31T00:55:19.303511+00:00"));
         }
-
-        [Fact]
-        public void AddFeeds()
-        {
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new Dictionary<String, String>
-            {
-                { "f404", "http://feed.test/" },
-                { "default", new FileInfo(@"TestData\registry1\index.json").FullName }
-            });
-
-            var feed = manager.Feeds;
-
-            feed.Count.Should().Be(1);
-        }
-
+        
         [Theory]
-        [InlineData("test", 4)]
+        [InlineData("test", 5)]
         [InlineData("package-1", 1)]
         [InlineData("test-package-1", 1)]
         public void FindPackages(String name, Int32 count)
         {
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
-
+            var manager = GetManager();
             var packages = manager.Find(name).ToList();
+
             packages.Count.Should().Be(count);
         }
 
         [Fact]
         public void PackageInfo()
         {
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
-
+            var manager = GetManager();
             var package = manager.Find("test-package-1").First();
+
             package.Name.Should().Be("Test Package 1");
             package.Description.Should().Be("Testing packages, part 1");
             package.Type.Should().Be(PackageType.Theme);
@@ -120,9 +119,7 @@ namespace RegistryTests
         public void GetPackage()
         {
 
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
-
+            var manager = GetManager();
             var pack = manager.Get("test-package-1", "1.0.0");
 
             pack.Id.Should().Be("test-package-1");
@@ -137,10 +134,10 @@ namespace RegistryTests
         public void GetNonExistingPackage1()
         {
 
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
+            var manager = GetManager();
+            Action action = () => manager.Get("test-package-x", "1.0.0");
 
-            var package = manager.Get("test-package-x", "1.0.0");
+            action.Should().Throw<PackageNotFoundException>();
 
             _logger.Last.EventId.Id.Should().Be(3003);
             _logger.Last.Message.Should().Be("Package not found");
@@ -152,11 +149,10 @@ namespace RegistryTests
         [InlineData("test-package-4")]
         public void GetNonExistingPackageVersion1(String name)
         {
+            var manager = GetManager();
+            Action action = () => manager.Get(name, "1.0.0");
 
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
-
-            var package = manager.Get(name, "1.0.0");
+            action.Should().Throw<PackageVersionNotFoundException>();
 
             _logger.Last.EventId.Id.Should().Be(3004);
             _logger.Last.Message.Should().Be("Package version not found");
@@ -165,14 +161,79 @@ namespace RegistryTests
         [Fact]
         public void GetNonExistingPackageVersion2()
         {
-
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
-
-            var package = manager.Get("test-package-4", "1.0.3");
+            var manager = GetManager();
+            Action action = () => manager.Get("test-package-4", "1.0.3");
+            
+            action.Should().Throw<InvalidPackFileException>();
 
             _logger.Last.EventId.Id.Should().Be(3002);
             _logger.Last.Message.Should().Be("Invalid Pack file");
+        }
+        
+        [Fact]
+        public void GetExistingPackageVersion()
+        {
+            var manager = GetManager();
+            var packageVersion = manager.GetPackageVersion("test-package-1", "1.0.0");
+
+            packageVersion.Updated.Should().Be(DateTime.Parse("2018-12-31T00:55:19.2841065+00:00"));
+            packageVersion.Url.Should().Be("http://feed1.test/packages/test-package-1/test-package-1-1.0.0.zip");
+            packageVersion.Size.Should().Be(382);
+            packageVersion.Sha256.Should().Be("55E55E7131A6164FD6302D43E84FFA1867601BD98A282A23E0086794F2746952");
+        }
+
+        [Fact]
+        public void TestDeps1a()
+        {
+            var manager = GetManager();
+            var pack = manager.Get("test-package-5", "1.0.0");
+
+            pack.Id.Should().Be("test-package-5");
+            pack.Name.Should().Be("Test Package 5");
+            pack.Dependencies.Count.Should().Be(1);
+            pack.Dependencies.First().Key.Should().Be("test-package-1");
+            pack.Dependencies.First().Value.Should().Be("^1.0.1");
+            pack.Dependencies.First().Value.Should().NotBe("1.0.1");
+            pack.Dependencies.First().Value.Should().NotBe("^1.0.0");
+        }
+
+        [Fact]
+        public void TestDeps1()
+        {
+            var manager = GetManager();
+            var package = manager.GetPackage("test-package-5", "1.0.0");
+
+            package.Id.Should().Be("test-package-5");
+            package.Name.Should().Be("Test Package 5");
+            package.Dependencies.Count.Should().Be(1);
+            package.Dependencies.First().Key.Should().Be("test-package-1");
+            package.Dependencies.First().Value.Should().Be("^1.0.1");
+            package.Dependencies.First().Value.Should().NotBe("1.0.1");
+            package.Dependencies.First().Value.Should().NotBe("^1.0.0");
+        }
+
+        [Fact]
+        public void TestDeps2()
+        {
+            var manager = GetManager();
+            var package = manager.GetPackage("test-package-5", "1.0.0");
+            var deps = package.Dependencies;
+
+            deps.Count.Should().Be(1);
+            deps.First().Key.Should().Be("test-package-1");
+            deps.First().Value.Should().Be("^1.0.1");
+        }
+
+        [Fact]
+        public void TestDeps3()
+        {
+            var manager = GetManager();
+            var package = manager.GetPackage("test-package-6", "1.0.0");
+            var deps = manager.GetDependancies(package);
+
+            deps.Count.Should().Be(1);
+            deps.First().Key.Should().Be("test-package-5");
+            deps.First().Value.Should().Be("^1.0.0");
         }
     }
 }
