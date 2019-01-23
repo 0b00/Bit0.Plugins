@@ -157,20 +157,43 @@ namespace Bit0.Registry.Core
         }
 
 
-        public IEnumerable<IPack> GetWithDependancies(Package package)
+        public IEnumerable<IPack> GetDependancyPacks(Package package)
         {
-            throw new NotImplementedException();
+            var lst = new List<IPack>();
+            var deps = GetDependancies(package);
+
+            foreach (var dep in deps)
+            {
+                var pack = Get(dep.Key, dep.Value);
+                lst.Add(pack);
+            }
+
+            return lst;
         }
+
         public IDictionary<String, String> GetDependancies(Package package)
         {
-            var deps = package.Dependencies.SelectMany(d =>
+            var deps = new Dictionary<String, String>();
+            GetDependancies(package, ref deps);
+            return deps;
+        }
+
+        private void GetDependancies(Package package, ref Dictionary<String, String> dependancies)
+        {
+            if (package == null || package.Dependencies == null)
             {
-                var p = GetPackage(d.Key, d.Value);
+                return;
+            }
 
-                return GetDependancies(p);
-            });
-
-            return deps.ToDictionary(k => k.Key, v=> v.Value);
+            foreach (var dep in package.Dependencies)
+            {
+                if (!dependancies.ContainsKey(dep.Key))
+                {
+                    dependancies.Add(dep.Key, dep.Value);
+                }
+                var dPkg = Packages.First(p => p.Id == dep.Key);
+                GetDependancies(dPkg, ref dependancies);
+            }
         }
 
         private PackageFeed GetFeed(Uri url)

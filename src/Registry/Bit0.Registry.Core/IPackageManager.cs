@@ -14,7 +14,7 @@ namespace Bit0.Registry.Core
         IPack Get(Package package, String semVer);
         IPack Get(PackageVersion packageVersion);
         IPack Get(String url);
-        IEnumerable<IPack> GetWithDependancies(Package package);
+        IEnumerable<IPack> GetDependancyPacks(Package package);
         IDictionary<String, String> GetDependancies(Package package);
         IEnumerable<Package> Packages { get; }
         IDictionary<String, PackageFeed> Feeds { get; }

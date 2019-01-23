@@ -69,7 +69,7 @@ namespace RegistryTests
         }
         
         [Theory]
-        [InlineData("test", 5)]
+        [InlineData("test", 6)]
         [InlineData("package-1", 1)]
         [InlineData("test-package-1", 1)]
         public void FindPackages(String name, Int32 count)
@@ -183,7 +183,7 @@ namespace RegistryTests
         }
 
         [Fact]
-        public void TestDeps1a()
+        public void TestDeps1()
         {
             var manager = GetManager();
             var pack = manager.Get("test-package-5", "1.0.0");
@@ -197,43 +197,32 @@ namespace RegistryTests
             pack.Dependencies.First().Value.Should().NotBe("^1.0.0");
         }
 
-        [Fact]
-        public void TestDeps1()
+        [Theory]
+        [InlineData("test-package-5", 1, "test-package-1", "^1.0.1")]
+        [InlineData("test-package-6", 1, "test-package-5", "^1.0.0")]
+        public void TestDeps2(String packageName, Int32 shoudBe, String depName, String depVersion)
         {
             var manager = GetManager();
-            var package = manager.GetPackage("test-package-5", "1.0.0");
-
-            package.Id.Should().Be("test-package-5");
-            package.Name.Should().Be("Test Package 5");
-            package.Dependencies.Count.Should().Be(1);
-            package.Dependencies.First().Key.Should().Be("test-package-1");
-            package.Dependencies.First().Value.Should().Be("^1.0.1");
-            package.Dependencies.First().Value.Should().NotBe("1.0.1");
-            package.Dependencies.First().Value.Should().NotBe("^1.0.0");
-        }
-
-        [Fact]
-        public void TestDeps2()
-        {
-            var manager = GetManager();
-            var package = manager.GetPackage("test-package-5", "1.0.0");
+            var package = manager.GetPackage(packageName, "1.0.0");
             var deps = package.Dependencies;
 
-            deps.Count.Should().Be(1);
-            deps.First().Key.Should().Be("test-package-1");
-            deps.First().Value.Should().Be("^1.0.1");
+            deps.Count.Should().Be(shoudBe);
+            deps.First().Key.Should().Be(depName);
+            deps.First().Value.Should().Be(depVersion);
         }
 
-        [Fact]
-        public void TestDeps3()
+        [Theory]
+        [InlineData("test-package-5", 1, "test-package-1", "^1.0.1")]
+        [InlineData("test-package-6", 2, "test-package-5", "^1.0.0")]
+        public void TestDeps3(String packageName, Int32 shoudBe, String depName, String depVersion)
         {
             var manager = GetManager();
-            var package = manager.GetPackage("test-package-6", "1.0.0");
+            var package = manager.GetPackage(packageName, "1.0.0");
             var deps = manager.GetDependancies(package);
 
-            deps.Count.Should().Be(1);
-            deps.First().Key.Should().Be("test-package-5");
-            deps.First().Value.Should().Be("^1.0.0");
+            deps.Count.Should().Be(shoudBe);
+            deps.First().Key.Should().Be(depName);
+            deps.First().Value.Should().Be(depVersion);
         }
     }
 }
