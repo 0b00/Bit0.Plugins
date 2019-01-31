@@ -159,14 +159,8 @@ namespace Bit0.Registry.Core
 
         public IEnumerable<IPack> GetDependancyPacks(Package package)
         {
-            var lst = new List<IPack>();
             var deps = GetDependancies(package);
-
-            foreach (var dep in deps)
-            {
-                var pack = Get(dep.Key, dep.Value);
-                lst.Add(pack);
-            }
+            var lst = deps.Select(dep => Get(dep.Key, dep.Value));
 
             return lst;
         }
