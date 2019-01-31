@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Bit0.Registry.Core
 {
-    [ExcludeFromCodeCoverageAttribute]
+    [ExcludeFromCodeCoverage]
     public class Author
     {
         [JsonProperty("name")]

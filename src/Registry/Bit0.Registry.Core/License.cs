@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Bit0.Registry.Core
 {
-    [ExcludeFromCodeCoverageAttribute]
+    [ExcludeFromCodeCoverage]
     public class License
     {
         [JsonProperty("name")]

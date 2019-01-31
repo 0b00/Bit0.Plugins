@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Bit0.Registry.Core.Exceptions
 {
     [Serializable]
+    [ExcludeFromCodeCoverage]
     public class InvalidPackFileException : Exception
     {
         public EventId EventId => 3002;
