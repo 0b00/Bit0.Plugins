@@ -6,12 +6,8 @@ using System.Reflection;
 
 namespace Bit0.Plugins.Core
 {
-    public class PluginLoader
+    public class PluginLoader : IPluginLoader
     {
-        public DirectoryInfo PluginsFolder { get; }
-
-        public IDictionary<String, IPlugin> Plugins { get; } = new Dictionary<String, IPlugin>();
-
         public PluginLoader(DirectoryInfo pluginsFolder)
         {
             PluginsFolder = pluginsFolder;
@@ -30,6 +26,10 @@ namespace Bit0.Plugins.Core
                 }
             }
         }
+
+        public DirectoryInfo PluginsFolder { get; }
+
+        public IDictionary<String, IPlugin> Plugins { get; } = new Dictionary<String, IPlugin>();
 
         public IPlugin GetPlugin(String id, String version)
         {
