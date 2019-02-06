@@ -33,7 +33,7 @@ namespace RegistryTests
         private PackageManager GetManager()
         {
             var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo(@"TestData\registry1\index.json").FullName));
+            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo("TestData/registry1/index.json").FullName));
             return manager;
         }
 
@@ -56,7 +56,7 @@ namespace RegistryTests
         {
             var manager = new PackageManager(_cacheDir, _logger);
             var name = "default";
-            var url = new FileInfo(@"TestData\registry1\index.json").FullName;
+            var url = new FileInfo("TestData/registry1/index.json").FullName;
 
             manager.AddFeed(new KeyValuePair<String, String>(name, url));
 
