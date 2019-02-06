@@ -1,4 +1,5 @@
-﻿using Bit0.Registry.Core.Exceptions;
+﻿using Bit0.Plugins.Core.Exceptions;
+using Bit0.Registry.Core.Exceptions;
 using Bit0.Registry.Core.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -30,7 +31,7 @@ namespace Bit0.Registry.Core
         {
             _logger.LogInformation(new EventId(3000), $"Add feed: {source.Key} {source.Value}");
 
-            var feed = GetFeed(new Uri(source.Value));
+            var feed = GetFeed(new Uri(source.Value.NormalizePath()));
             if (feed != null)
             {
                 Feeds.Add(source.Key, feed);
@@ -106,13 +107,13 @@ namespace Bit0.Registry.Core
         
         public IPack Get(PackageVersion version)
         {
-            return Get(version.Url);
+            return Get(version.Url.NormalizePath());
         }
 
         public IPack Get(String url)
         {
 #if TEST
-            url = new FileInfo(url.Replace("http://feed1.test/", @"TestData\registry1\")).FullName;
+            url = new FileInfo(url.Replace("http://feed1.test/", "TestData/registry1/")).FullName;
 #endif
             try
             {
