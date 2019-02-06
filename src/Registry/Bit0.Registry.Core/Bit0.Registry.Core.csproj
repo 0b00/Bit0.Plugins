@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Configurations>Debug;Release;Test</Configurations>
-    <RootNamespace>Bit0.Plugins.Core</RootNamespace>
-    <Description>Core package for extension of code base with plugins.</Description>
+    <RootNamespace>Bit0.Registry.Core</RootNamespace>
+    <Description>Core Registry.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Registry</PackageProjectUrl>
     <PackageTags>registry, packages, package, management</PackageTags>
   </PropertyGroup>
