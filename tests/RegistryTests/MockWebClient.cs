@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Bit0.Registry.Core.Extensions;
+using System;
 using System.IO;
 using System.Net;
-using System.Text;
-using Bit0.Registry.Core.Extensions;
 
 namespace RegistryTests
 {
