@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Bit0.Plugins.Core.Exceptions
+namespace Bit0.Registry.Core.Extensions
 {
     public static class StringExtensions
     {        public static String NormalizePath(this String path)
