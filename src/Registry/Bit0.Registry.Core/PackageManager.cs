@@ -116,10 +116,10 @@ namespace Bit0.Registry.Core
         {
             try
             {
-                ZipArchive zip;
-                var file = new FileInfo($"pack{DateTime.Now.ToBinary().ToString()}.zip");
+                var file = new FileInfo($"{Path.GetTempFileName()}.pack.zip");
                 _webClient.DownloadFile(url, file.FullName);
 
+                ZipArchive zip;
                 zip = ZipFile.Open(file.FullName, ZipArchiveMode.Read, Encoding.UTF8);
                 _logger.LogInformation(new EventId(3000), $"Downloaded Pack archive: {url}");
 
