@@ -3,9 +3,10 @@ using Bit0.Registry.Core.Exceptions;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,12 +16,14 @@ namespace RegistryTests
     {
         private readonly ICacheLogger<IPackageManager> _logger;
         private readonly DirectoryInfo _cacheDir;
+        private readonly WebClient _webClient;
 
         public PackageManagerTest(ITestOutputHelper output)
         {
-            var factory = LogFactory.Create(output);
             _logger = output.BuildLoggerFor<IPackageManager>();
             _cacheDir = new DirectoryInfo(".packs");
+
+            _webClient = new MockWebClient();
         }
 
         ~PackageManagerTest() {
@@ -32,36 +35,36 @@ namespace RegistryTests
 
         private PackageManager GetManager()
         {
-            var manager = new PackageManager(_cacheDir, _logger);
-            manager.AddFeed(new KeyValuePair<String, String>("default", new FileInfo("TestData/registry1/index.json").FullName));
+            var manager = new PackageManager(_cacheDir, _webClient, _logger);
+            manager.AddFeed("default", "http://feed1.test/");
             return manager;
         }
 
         [Fact]
         public void AddNonExistingFeed()
         {
-            var manager = new PackageManager(_cacheDir, _logger);
+            var manager = new PackageManager(_cacheDir, _webClient, _logger);
             var name = "default";
-            var url = "http://feed/";
+            var url = "http://feed.test/";
 
-            Action action = () => manager.AddFeed(new KeyValuePair<String, String>(name, url));
+            Action action = () => manager.AddFeed(name, url);
+
             action.Should().Throw<InvalidFeedException>();
 
             _logger.Last.EventId.Id.Should().Be(3001);
-            _logger.Last.Message.Should().Be($"Could load package feed: {url}");
+            _logger.Last.Message.Should().Be($"Could load package feed: {url}index.json");
         }
 
         [Fact]
         public void AddExistingFeed()
         {
-            var manager = new PackageManager(_cacheDir, _logger);
+            var manager = new PackageManager(_cacheDir, _webClient, _logger);
             var name = "default";
-            var url = new FileInfo("TestData/registry1/index.json").FullName;
+            var url = "http://feed1.test/";
 
-            manager.AddFeed(new KeyValuePair<String, String>(name, url));
+            manager.AddFeed(name, url);
 
             var feed = manager.Feeds.FirstOrDefault();
-
             feed.Key.Should().Be(name);
             feed.Value.Title.Should().Be("Test Feed 1");
             feed.Value.Id.Should().Be("http://feed1.test/");

@@ -1,5 +1,4 @@
-﻿using Bit0.Plugins.Core.Exceptions;
-using Bit0.Registry.Core.Exceptions;
+﻿using Bit0.Registry.Core.Exceptions;
 using Bit0.Registry.Core.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,22 +18,25 @@ namespace Bit0.Registry.Core
     {
         private readonly DirectoryInfo _packageCacheDir;
         private readonly ILogger<IPackageManager> _logger;
+        private readonly WebClient _webClient;
 
-
-        public PackageManager(DirectoryInfo packageCacheDir, ILogger<IPackageManager> logger)
+        public PackageManager(DirectoryInfo packageCacheDir, WebClient webClient, ILogger<IPackageManager> logger)
         {
             _packageCacheDir = packageCacheDir;
             _logger = logger;
+            _webClient = webClient;
         }
 
-        public void AddFeed(KeyValuePair<String, String> source)
+        public void AddFeed(String name, String url)
         {
-            _logger.LogInformation(new EventId(3000), $"Add feed: {source.Key} {source.Value}");
+            _logger.LogInformation(new EventId(3000), $"Add feed: {name} {url}");
 
-            var feed = GetFeed(new Uri(source.Value.NormalizePath()));
+            var uri = new Uri(url + "index.json");
+
+            var feed = GetFeed(uri);
             if (feed != null)
             {
-                Feeds.Add(source.Key, feed);
+                Feeds.Add(name, feed);
             }
         }
 
@@ -104,28 +106,22 @@ namespace Bit0.Registry.Core
         {
             return Get(GetPackageVersion(package, semVer));
         }
-        
+
         public IPack Get(PackageVersion version)
         {
-            return Get(version.Url.NormalizePath());
+            return Get(version.Url);
         }
 
         public IPack Get(String url)
         {
-#if TEST
-            url = new FileInfo(url.Replace("http://feed1.test/", "TestData/registry1/")).FullName;
-#endif
             try
             {
                 ZipArchive zip;
-                using (var wc = new WebClient())
-                {
-                    var file = new FileInfo($"pack{DateTime.Now.ToBinary().ToString()}.zip");
-                    wc.DownloadFile(url, file.FullName);
+                var file = new FileInfo($"pack{DateTime.Now.ToBinary().ToString()}.zip");
+                _webClient.DownloadFile(url, file.FullName);
 
-                    zip = ZipFile.Open(file.FullName, ZipArchiveMode.Read, Encoding.UTF8);
-                    _logger.LogInformation(new EventId(3000), $"Downloaded Pack archive: {url}");
-                }
+                zip = ZipFile.Open(file.FullName, ZipArchiveMode.Read, Encoding.UTF8);
+                _logger.LogInformation(new EventId(3000), $"Downloaded Pack archive: {url}");
 
                 IPack pack;
                 var packEntry = zip.GetEntry("pack.json");
@@ -193,26 +189,22 @@ namespace Bit0.Registry.Core
 
         private PackageFeed GetFeed(Uri url)
         {
-            using (var wc = new WebClient())
+            try
             {
-                try
+                using (var file = _webClient.OpenRead(url).GetJsonReader())
                 {
-                    using (var file = wc.OpenRead(url).GetJsonReader())
-                    {
-                        _logger.LogInformation(new EventId(3000), $"Found package feed: {url}");
-                        var serializer = new JsonSerializer();
-                        return serializer.Deserialize<PackageFeed>(file);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    var exp = new InvalidFeedException(url, ex);
-                    _logger.LogInformation(exp.EventId, exp, $"Could load package feed: {url}");
-                    throw exp;
+                    _logger.LogInformation(new EventId(3000), $"Found package feed: {url}");
+                    var serializer = new JsonSerializer();
+                    return serializer.Deserialize<PackageFeed>(file);
                 }
             }
-
+            catch (Exception ex)
+            {
+                var exp = new InvalidFeedException(url, ex);
+                _logger.LogInformation(exp.EventId, exp, $"Could load package feed: {url}");
+                throw exp;
+            }
         }
-        
+
     }
 }

@@ -5,7 +5,7 @@ namespace Bit0.Registry.Core
 {
     public interface IPackageManager
     {
-        void AddFeed(KeyValuePair<String, String> feeds);
+        void AddFeed(String name, String url);
         IEnumerable<Package> Find(String name);
         Package GetPackage(String name, String semVer);
         PackageVersion GetPackageVersion(String name, String semVer);
