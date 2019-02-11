@@ -5,6 +5,9 @@
     <Description>Core package for extension of code base with plugins.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Plugins</PackageProjectUrl>
     <PackageTags>plugins, extensions</PackageTags>
+
+    <Version>1.0.2</Version>
+    <PackageVersion>$(Version)</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
