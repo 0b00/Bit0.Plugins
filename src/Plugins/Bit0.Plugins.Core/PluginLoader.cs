@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,18 +13,14 @@ namespace Bit0.Plugins.Core
         {
             PluginsFolder = pluginsFolder;
 
-            foreach (var file in pluginsFolder.GetFiles("*.dll", SearchOption.AllDirectories))
-            {
-                var assembly = Assembly.LoadFile(file.FullName);
-                var assemblyPlugins = assembly.GetTypes()
-                    .Where(t => typeof(IPlugin).IsAssignableFrom(t));
+            var plugins = pluginsFolder.GetFiles("*.dll", SearchOption.AllDirectories)
+                .SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes())
+                .Where(t => typeof(IPlugin).IsAssignableFrom(t))
+                .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin);
 
-                foreach (var pluginType in assemblyPlugins)
-                {
-                    var plugin = Activator.CreateInstance(pluginType) as IPlugin;
-                    var info = plugin.GetInfo();
-                    Plugins.Add(info.FullId, plugin);
-                }
+            foreach (var plugin in plugins)
+            {
+                Plugins.Add(plugin.GetInfo().FullId, plugin);
             }
         }
 
@@ -34,6 +31,14 @@ namespace Bit0.Plugins.Core
         public IPlugin GetPlugin(String id, String version)
         {
             return Plugins[$"{id}@{version}"];
+        }
+
+        public void RegisterAll(IServiceCollection services)
+        {
+            foreach (var plugin in Plugins)
+            {
+                plugin.Value.Register(services);
+            }
         }
     }
 }
