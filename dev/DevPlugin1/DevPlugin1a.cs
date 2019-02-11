@@ -9,6 +9,9 @@ namespace DevPlugin1
     [Plugin(Id = "dev-plugin1a", Name = "Dev Plugin 1a", Version = "1.0.0")]
     public class DevPlugin1a : PluginBase, IPlugin
     {
-        public override void Register(IServiceCollection services) => throw new NotImplementedException();
+        public override void Register(IServiceCollection services)
+        {
+            services.AddSingleton<IPlugin>(factory => this);
+        }
     }
 }

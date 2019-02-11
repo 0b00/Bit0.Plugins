@@ -32,13 +32,5 @@ namespace Bit0.Plugins.Core
         {
             return Plugins[$"{id}@{version}"];
         }
-
-        public void RegisterAll(IServiceCollection services)
-        {
-            foreach (var plugin in Plugins)
-            {
-                plugin.Value.Register(services);
-            }
-        }
     }
 }
