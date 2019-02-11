@@ -3,6 +3,7 @@ using Bit0.Registry.Core.Exceptions;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace RegistryTests
 {
+    [ExcludeFromCodeCoverage]
     public class PackageManagerTest
     {
         private readonly ICacheLogger<IPackageManager> _logger;
@@ -25,7 +27,8 @@ namespace RegistryTests
             _webClient = new MockWebClient();
         }
 
-        ~PackageManagerTest() {
+        ~PackageManagerTest()
+        {
             if (_cacheDir.Exists)
             {
                 _cacheDir.Delete(recursive: true);
@@ -69,7 +72,7 @@ namespace RegistryTests
             feed.Value.Id.Should().Be("http://feed1.test/");
             feed.Value.Updated.Should().Be(DateTime.Parse("2018-12-31T00:55:19.303511+00:00"));
         }
-        
+
         [Theory]
         [InlineData("test", 6)]
         [InlineData("package-1", 1)]
@@ -109,14 +112,14 @@ namespace RegistryTests
             package.Features.Last().Should().Be("theme");
             package.Screenshot.Should().Be("http://feed1.test/packages/test-package-1/screenshot.png");
             package.Versions.Count().Should().Be(4);
-            
+
             var packageVersion = package.Versions.First();
             packageVersion.Updated.Should().Be(DateTime.Parse("2018-12-31T00:55:19.2841065+00:00"));
             packageVersion.Url.Should().Be("http://feed1.test/packages/test-package-1/test-package-1-1.0.0.zip");
             packageVersion.Size.Should().Be(382);
             packageVersion.Sha256.Should().Be("55E55E7131A6164FD6302D43E84FFA1867601BD98A282A23E0086794F2746952");
         }
-        
+
         [Fact]
         public void GetPackage()
         {
@@ -159,19 +162,19 @@ namespace RegistryTests
             _logger.Last.EventId.Id.Should().Be(3004);
             _logger.Last.Message.Should().Be("Package version not found");
         }
-        
+
         [Fact]
         public void GetNonExistingPackageVersion2()
         {
             var manager = GetManager();
             Action action = () => manager.Get("test-package-4", "1.0.3");
-            
+
             action.Should().Throw<InvalidPackFileException>();
 
             _logger.Last.EventId.Id.Should().Be(3002);
             _logger.Last.Message.Should().Be("Invalid Pack file");
         }
-        
+
         [Fact]
         public void GetExistingPackageVersion()
         {
@@ -225,6 +228,34 @@ namespace RegistryTests
             deps.Count.Should().Be(shoudBe);
             deps.First().Key.Should().Be(depName);
             deps.First().Value.Should().Be(depVersion);
+        }
+
+        [Theory]
+        [InlineData("test-package-5", 1)]
+        [InlineData("test-package-6", 2)]
+        public void TestDeps4(String packageName, Int32 shoudBe)
+        {
+            var manager = GetManager();
+            var package = manager.GetPackage(packageName, "1.0.0");
+            var packs = manager.GetDependancyPacks(package);
+
+            packs.Should().HaveCount(shoudBe);
+        }
+
+        [Fact]
+        public void Testdeps5()
+        {
+            var manager = GetManager();
+
+            {
+                var deps = manager.GetDependancies(null);
+                deps.Should().HaveCount(0);
+            }
+
+            {
+                var deps = manager.GetDependancies(new Package());
+                deps.Should().HaveCount(0);
+            }
         }
     }
 }
