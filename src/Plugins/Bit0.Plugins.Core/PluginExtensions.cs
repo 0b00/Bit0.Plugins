@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.Extensions.Logging;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace Bit0.Plugins.Core
@@ -13,16 +12,17 @@ namespace Bit0.Plugins.Core
             return plugin.GetType().GetCustomAttribute<PluginAttribute>();
         }
 
-        public static IServiceCollection LoadPlugins(this IServiceCollection services, DirectoryInfo pluginsDir)
+        public static IServiceCollection LoadPlugins(this IServiceCollection services, DirectoryInfo pluginsDir, ILogger<IPluginLoader> logger)
         {
-            var pluginLoader = new PluginLoader(pluginsDir);
+            var pluginLoader = new PluginLoader(pluginsDir, logger);
 
             foreach (var plugin in pluginLoader.Plugins.Values)
             {
                 plugin.Register(services);
+                logger.LogInformation(new EventId(4003), $"Registered: {plugin.FullId}");
             }
 
-            services.AddTransient<IPluginLoader>(factory => pluginLoader);
+            services.AddSingleton<IPluginLoader>(pluginLoader);
             
             return services;
         }

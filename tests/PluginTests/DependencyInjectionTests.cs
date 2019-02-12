@@ -1,4 +1,5 @@
 ﻿using Bit0.Plugins.Core;
+using Divergic.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -7,17 +8,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace PluginTests
 {
     [ExcludeFromCodeCoverage]
     public class DependencyInjectionTests
     {
+        private readonly ICacheLogger<IPluginLoader> _logger;
+
+        public DependencyInjectionTests(ITestOutputHelper output)
+        {
+            _logger = output.BuildLoggerFor<IPluginLoader>();
+        }
+
         [Fact]
         public void ServiceProviderTest()
         {
             var services = new ServiceCollection();
-            services.LoadPlugins(new FileInfo(Assembly.GetExecutingAssembly().Location).Directory);
+            services.LoadPlugins(new FileInfo(Assembly.GetExecutingAssembly().Location).Directory, _logger);
 
             var provider = services.BuildServiceProvider();
 

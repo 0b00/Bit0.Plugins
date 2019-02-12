@@ -5,7 +5,20 @@ namespace Bit0.Plugins.Core
 {
     public abstract class PluginBase : IPlugin
     {
-        public String FullId => this.GetInfo().FullId;
+        private String _fullId;
+
+        public String FullId
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_fullId))
+                {
+                    _fullId = this.GetInfo().FullId;
+                }
+
+                return _fullId;
+            }
+        }
 
         public abstract void Register(IServiceCollection services);
     }

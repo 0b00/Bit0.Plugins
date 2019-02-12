@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,18 +9,25 @@ namespace Bit0.Plugins.Core
 {
     public class PluginLoader : IPluginLoader
     {
-        public PluginLoader(DirectoryInfo pluginsFolder)
+        public PluginLoader(DirectoryInfo pluginsFolder, ILogger<IPluginLoader> logger)
         {
             PluginsFolder = pluginsFolder;
+
+            logger.LogInformation(new EventId(4000), "Start loading plugins");
 
             var plugins = pluginsFolder.GetFiles("*.dll", SearchOption.AllDirectories)
                 .SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes())
                 .Where(t => typeof(IPlugin).IsAssignableFrom(t))
-                .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin);
+                .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin)
+                .ToList();
+            
+            logger.LogInformation(new EventId(4001), $"Found {plugins.Count} plugins.");
 
             foreach (var plugin in plugins)
             {
-                Plugins.Add(plugin.GetInfo().FullId, plugin);
+                logger.LogInformation(new EventId(4002), $"Loading: {plugin.FullId}");
+                Plugins.Add(plugin.FullId, plugin);
+                logger.LogInformation(new EventId(4002), $"Loaded: {plugin.FullId}");
             }
         }
 
