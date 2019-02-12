@@ -11,6 +11,13 @@ namespace Bit0.Plugins.Core
     {
         public PluginLoader(DirectoryInfo pluginsFolder, ILogger<IPluginLoader> logger)
         {
+            if (!pluginsFolder.Exists)
+            {
+                var exp = new DirectoryNotFoundException($"Could not find {pluginsFolder.FullName}");
+                logger.LogError(new EventId(4004), exp, exp.Message);
+                throw exp;
+            }
+
             PluginsFolder = pluginsFolder;
 
             logger.LogInformation(new EventId(4000), "Start loading plugins");

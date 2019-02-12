@@ -30,6 +30,18 @@ namespace PluginTests
         }
 
         [Fact]
+        public void PluginsFolderNotFound()
+        {
+            var path = new DirectoryInfo($"X:\\{DateTime.Now.ToBinary().ToString()}");
+            Action action = () => new PluginLoader(path, _logger);
+
+            action.Should().Throw<DirectoryNotFoundException>();
+
+            _logger.Last.EventId.Id.Should().Be(4004);
+            _logger.Last.Message.Should().StartWith($"Could not find {path}");
+        }
+
+        [Fact]
         public void PluginsCount()
         {
             var loader = new PluginLoader(_path, _logger);
