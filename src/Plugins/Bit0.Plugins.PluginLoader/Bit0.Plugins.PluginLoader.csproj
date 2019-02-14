@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Bit0.Plugins.Core</RootNamespace>
+    <RootNamespace>Bit0.Plugins.PluginLoader</RootNamespace>
     <Description>Plugins loader for extending the applications. For host applications. Use Bit0.Plugins.Sdk for Plugins.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Plugins</PackageProjectUrl>
     <PackageTags>plugins, extensions</PackageTags>
