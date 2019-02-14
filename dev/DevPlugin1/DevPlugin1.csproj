@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Plugins\Bit0.Plugins.Core\Bit0.Plugins.Core.csproj" />
+    <ProjectReference Include="..\..\src\Plugins\Bit0.Plugins.PluginLoader\Bit0.Plugins.PluginLoader.csproj" />
   </ItemGroup>
 
 </Project>

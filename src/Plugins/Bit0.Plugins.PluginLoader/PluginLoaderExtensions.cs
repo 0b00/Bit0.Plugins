@@ -2,17 +2,11 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 
 namespace Bit0.Plugins.Core
 {
-    public static class PluginExtensions
+    public static class PluginLoaderExtensions
     {
-        public static PluginAttribute GetInfo(this IPlugin plugin)
-        {
-            return plugin.GetType().GetCustomAttribute<PluginAttribute>();
-        }
-
         public static IServiceCollection LoadPlugins(this IServiceCollection services, DirectoryInfo pluginsDir, ILogger<IPluginLoader> logger)
         {
             return services.LoadPlugins(new[] { pluginsDir }, logger);
