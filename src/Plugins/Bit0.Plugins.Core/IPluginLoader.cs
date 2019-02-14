@@ -8,7 +8,7 @@ namespace Bit0.Plugins.Core
     {
         IDictionary<String, IPlugin> Plugins { get; }
 
-        DirectoryInfo PluginsFolder { get; }
+        IEnumerable<DirectoryInfo> PluginsFolders { get; }
 
         IPlugin GetPlugin(String id, String version);
     }

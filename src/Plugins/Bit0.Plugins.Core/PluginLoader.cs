@@ -9,25 +9,27 @@ namespace Bit0.Plugins.Core
 {
     public class PluginLoader : IPluginLoader
     {
-        public PluginLoader(DirectoryInfo pluginsFolder, ILogger<IPluginLoader> logger)
+        public PluginLoader(IEnumerable<DirectoryInfo> pluginsFolders, ILogger<IPluginLoader> logger)
         {
-            if (!pluginsFolder.Exists)
-            {
-                var exp = new DirectoryNotFoundException($"Could not find {pluginsFolder.FullName}");
-                logger.LogError(new EventId(4004), exp, exp.Message);
-                throw exp;
-            }
-
-            PluginsFolder = pluginsFolder;
 
             logger.LogInformation(new EventId(4000), "Start loading plugins");
 
-            var plugins = pluginsFolder.GetFiles("*.dll", SearchOption.AllDirectories)
+            PluginsFolders = pluginsFolders.Where(d => d.Exists);
+            IList<IPlugin> plugins = new List<IPlugin>();
+
+            plugins = PluginsFolders.SelectMany(d => d.GetFiles("*.dll", SearchOption.AllDirectories))
                 .SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes())
                 .Where(t => typeof(IPlugin).IsAssignableFrom(t))
                 .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin)
                 .ToList();
-            
+
+            if (!plugins.Any())
+            {
+                var exp = new DirectoryNotFoundException($"Could not find plugins.");
+                logger.LogError(new EventId(4004), exp, exp.Message);
+                throw exp;
+            }
+
             logger.LogInformation(new EventId(4001), $"Found {plugins.Count} plugins.");
 
             foreach (var plugin in plugins)
@@ -38,7 +40,7 @@ namespace Bit0.Plugins.Core
             }
         }
 
-        public DirectoryInfo PluginsFolder { get; }
+        public IEnumerable<DirectoryInfo> PluginsFolders { get; }
 
         public IDictionary<String, IPlugin> Plugins { get; } = new Dictionary<String, IPlugin>();
 
