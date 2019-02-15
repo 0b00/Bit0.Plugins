@@ -64,8 +64,8 @@ namespace Bit0.Registry.Core
 
             if (package == null)
             {
-                var exp = new PackageNotFoundException("Package not found");
-                _logger.LogError(exp.EventId, exp, "Package not found");
+                var exp = new PackageNotFoundException(name, semVer);
+                _logger.LogError(exp.EventId, exp, exp.Message);
                 throw exp;
             }
 

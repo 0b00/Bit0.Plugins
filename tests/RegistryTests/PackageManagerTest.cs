@@ -145,7 +145,7 @@ namespace RegistryTests
             action.Should().Throw<PackageNotFoundException>();
 
             _logger.Last.EventId.Id.Should().Be(3003);
-            _logger.Last.Message.Should().Be("Package not found");
+            _logger.Last.Message.Should().Be("Package not found: test-package-x@1.0.0");
         }
 
         [Theory]
