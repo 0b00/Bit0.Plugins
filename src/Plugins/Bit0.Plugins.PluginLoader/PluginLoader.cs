@@ -18,19 +18,19 @@ namespace Bit0.Plugins.PluginLoader
             IList<IPlugin> plugins = new List<IPlugin>();
 
             plugins = PluginsFolders.SelectMany(d => d.GetFiles("*.dll", SearchOption.AllDirectories))
+                .Where(file => file.Name.ToLowerInvariant().Contains("plugin".ToLowerInvariant()))
                 .SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes())
-                .Where(t => typeof(IPlugin).IsAssignableFrom(t))
+                .Where(t => typeof(IPlugin).IsAssignableFrom(t) && t.IsAbstract)
                 .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin)
                 .ToList();
+
+            logger.LogInformation(new EventId(4001), $"Found {plugins.Count} plugins.");
 
             if (!plugins.Any())
             {
                 var exp = new NoPluginsFoundException(pluginsFolders);
-                logger.LogError(exp.EventId, exp, exp.Message);
-                throw exp;
+                logger.LogWarning(exp.EventId, exp, exp.Message);
             }
-
-            logger.LogInformation(new EventId(4001), $"Found {plugins.Count} plugins.");
 
             foreach (var plugin in plugins)
             {
