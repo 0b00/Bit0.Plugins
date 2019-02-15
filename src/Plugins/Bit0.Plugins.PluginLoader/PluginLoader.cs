@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Bit0.Plugins.Core
+namespace Bit0.Plugins.PluginLoader
 {
     public class PluginLoader : IPluginLoader
     {
@@ -25,8 +25,8 @@ namespace Bit0.Plugins.Core
 
             if (!plugins.Any())
             {
-                var exp = new DirectoryNotFoundException($"Could not find plugins.");
-                logger.LogError(new EventId(4004), exp, exp.Message);
+                var exp = new NoPluginsFoundException(pluginsFolders);
+                logger.LogError(exp.EventId, exp, exp.Message);
                 throw exp;
             }
 
@@ -35,14 +35,23 @@ namespace Bit0.Plugins.Core
             foreach (var plugin in plugins)
             {
                 logger.LogInformation(new EventId(4002), $"Loading: {plugin.FullId}");
+
                 Plugins.Add(plugin.FullId, plugin);
+
                 logger.LogInformation(new EventId(4002), $"Loaded: {plugin.FullId}");
+
+                if (plugin.Implementing != null)
+                {
+                    Implementations.Add(plugin.Implementing, plugin);
+                    logger.LogInformation(new EventId(4002), $"{plugin.FullId} => {plugin.Implementing.FullName}");
+                }
             }
         }
 
         public IEnumerable<DirectoryInfo> PluginsFolders { get; }
 
         public IDictionary<String, IPlugin> Plugins { get; } = new Dictionary<String, IPlugin>();
+        public IDictionary<Type, IPlugin> Implementations { get; } = new Dictionary<Type, IPlugin>();
 
         public IPlugin GetPlugin(String id, String version)
         {

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Bit0.Plugins.Core
+namespace Bit0.Plugins
 {
     public static class PluginExtensions
     {

@@ -3,7 +3,6 @@ using System;
 
 namespace Bit0.Registry.Core.Exceptions
 {
-    // [ExcludeFromCodeCoverage]
     public class InvalidPackFileException : Exception
     {
         public EventId EventId => new EventId(3002, "InvalidPackFile");

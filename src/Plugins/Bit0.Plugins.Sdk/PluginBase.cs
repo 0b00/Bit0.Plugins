@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 
-namespace Bit0.Plugins.Core
+namespace Bit0.Plugins
 {
     public abstract class PluginBase : IPlugin
     {
@@ -20,6 +19,19 @@ namespace Bit0.Plugins.Core
             }
         }
 
-        public abstract void Register(IServiceCollection services);
+        private Type _implementing;
+
+        public Type Implementing
+        {
+            get
+            {
+                if (_implementing == null)
+                {
+                    _implementing = this.GetInfo().Implementing;
+                }
+
+                return _implementing;
+            }
+        }
     }
 }

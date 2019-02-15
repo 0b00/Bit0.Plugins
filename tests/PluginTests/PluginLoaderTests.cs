@@ -1,4 +1,5 @@
-using Bit0.Plugins.Core;
+using Bit0.Plugins;
+using Bit0.Plugins.PluginLoader;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
@@ -35,12 +36,13 @@ namespace PluginTests
         [Fact]
         public void PluginsFolderNotFound()
         {
-            Action action = () => new PluginLoader(new[] { new DirectoryInfo(DateTime.Now.ToBinary().ToString()) }, _logger);
+            var paths = new[] { new DirectoryInfo(DateTime.Now.ToBinary().ToString()) };
+            Action action = () => new PluginLoader( paths, _logger);
 
-            action.Should().Throw<DirectoryNotFoundException>();
+            action.Should().Throw<NoPluginsFoundException>();
 
             _logger.Last.EventId.Id.Should().Be(4004);
-            _logger.Last.Message.Should().StartWith("Could not find plugins.");
+            (_logger.Last.Exception as NoPluginsFoundException).PluginsFolders.First().FullName.Should().Be(paths.First().FullName);
         }
 
         [Fact]
@@ -51,9 +53,9 @@ namespace PluginTests
         }
 
         [Theory]
-        [InlineData("dev-plugin1a", "1.0.0", "Dev Plugin 1a")]
-        [InlineData("dev-plugin1b", "1.0.0", "Dev Plugin 1b")]
-        public void GetPlugin(String id, String version, String name)
+        [InlineData("dev-plugin1a", "1.0.0", "Dev Plugin 1a", null)]
+        [InlineData("dev-plugin1b", "1.0.0", "Dev Plugin 1b", typeof(IPlugin))]
+        public void GetPlugin(String id, String version, String name, Type implementing)
         {
             var loader = new PluginLoader(_paths, _logger);
 
@@ -65,6 +67,11 @@ namespace PluginTests
             info.Id.Should().Be(id);
             info.Version.Should().Be(version);
             info.Name.Should().Be(name);
+            info.FullId.Should().Be($"{id}@{version}");
+            info.Implementing.Should().Be(implementing);
+
+            plugin.FullId.Should().Be($"{id}@{version}");
+            plugin.Implementing.Should().Be(implementing);
         }
     }
 }

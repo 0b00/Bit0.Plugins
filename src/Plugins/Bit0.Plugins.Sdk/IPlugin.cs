@@ -1,12 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 
-namespace Bit0.Plugins.Core
+namespace Bit0.Plugins
 {
     public interface IPlugin
     {
         String FullId { get; }
-
-        void Register(IServiceCollection services);
+        Type Implementing { get; }
     }
 }
