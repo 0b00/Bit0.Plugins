@@ -17,12 +17,12 @@ namespace Bit0.Plugins.PluginLoader
             PluginsFolders = pluginsFolders.Where(d => d.Exists);
             IList<IPlugin> plugins = new List<IPlugin>();
 
-            plugins = PluginsFolders.SelectMany(d => d.GetFiles("*.dll", SearchOption.AllDirectories))
-                .Where(file => file.Name.ToLowerInvariant().Contains("plugin".ToLowerInvariant()))
-                .SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes())
-                .Where(t => typeof(IPlugin).IsAssignableFrom(t) && t.IsAbstract)
-                .Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin)
-                .ToList();
+            var dlls = PluginsFolders.SelectMany(d => d.GetFiles("*.dll", SearchOption.AllDirectories));
+            var filteredDlls = dlls.Where(file => file.Name.ToLowerInvariant().Contains("plugin".ToLowerInvariant()));
+            var types = filteredDlls.SelectMany(file => Assembly.LoadFile(file.FullName).GetTypes());
+            var filteredTypes = types.Where(t => typeof(IPlugin).IsAssignableFrom(t) && !t.IsAbstract);
+
+            plugins = filteredTypes.Select(pluginType => Activator.CreateInstance(pluginType) as IPlugin).ToList();
 
             logger.LogInformation(new EventId(4001), $"Found {plugins.Count} plugins.");
 
