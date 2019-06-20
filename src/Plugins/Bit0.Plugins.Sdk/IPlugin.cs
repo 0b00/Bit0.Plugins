@@ -4,7 +4,6 @@ namespace Bit0.Plugins
 {
     public interface IPlugin
     {
-        String FullId { get; }
-        Type Implementing { get; }
+        PluginAttribute Info { get; }
     }
 }

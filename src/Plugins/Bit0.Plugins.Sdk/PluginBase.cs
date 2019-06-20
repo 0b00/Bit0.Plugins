@@ -1,36 +1,22 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Bit0.Plugins
 {
     public abstract class PluginBase : IPlugin
     {
-        private String _fullId;
+        private PluginAttribute _info;
 
-        public String FullId
+        public PluginAttribute Info
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(_fullId))
+                if (_info == null)
                 {
-                    _fullId = this.GetInfo().FullId;
+                    _info = GetType().GetCustomAttribute<PluginAttribute>();
                 }
 
-                return _fullId;
-            }
-        }
-
-        private Type _implementing;
-
-        public Type Implementing
-        {
-            get
-            {
-                if (_implementing == null)
-                {
-                    _implementing = this.GetInfo().Implementing;
-                }
-
-                return _implementing;
+                return _info;
             }
         }
     }
