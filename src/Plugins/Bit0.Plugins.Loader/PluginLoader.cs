@@ -28,22 +28,22 @@ namespace Bit0.Plugins.PluginLoader
 
             if (!plugins.Any())
             {
-                var exp = new NoPluginsFoundException(pluginsFolders);
-                logger.LogWarning(exp.EventId, exp, exp.Message);
+                var evId = new EventId(4004, "NoPluginsFound");
+                logger.LogWarning(evId, "No plugins loaded.");
             }
 
             foreach (var plugin in plugins)
             {
-                logger.LogInformation(new EventId(4002), $"Loading: {plugin.FullId}");
+                logger.LogInformation(new EventId(4002), $"Loading: {plugin.Info.FullId}");
 
-                Plugins.Add(plugin.FullId, plugin);
+                Plugins.Add(plugin.Info.FullId, plugin);
 
-                logger.LogInformation(new EventId(4002), $"Loaded: {plugin.FullId}");
+                logger.LogInformation(new EventId(4002), $"Loaded: {plugin.Info.FullId}");
 
-                if (plugin.Implementing != null)
+                if (plugin.Info.Implementing != null)
                 {
-                    Implementations.Add(plugin.Implementing, plugin);
-                    logger.LogInformation(new EventId(4002), $"{plugin.FullId} => {plugin.Implementing.FullName}");
+                    Implementations.Add(plugin.Info.Implementing, plugin);
+                    logger.LogInformation(new EventId(4002), $"{plugin.Info.FullId} => {plugin.Info.Implementing.FullName}");
                 }
             }
         }
