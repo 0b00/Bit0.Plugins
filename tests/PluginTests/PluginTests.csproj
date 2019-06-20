@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\dev\DevPlugin1\DevPlugin1.csproj" />
-    <ProjectReference Include="..\..\src\Plugins\Bit0.Plugins.PluginLoader\Bit0.Plugins.PluginLoader.csproj" />
+    <ProjectReference Include="..\..\src\Plugins\Bit0.Plugins.Loader\Bit0.Plugins.Loader.csproj" />
   </ItemGroup>
 
 </Project>

@@ -37,12 +37,10 @@ namespace PluginTests
         public void PluginsFolderNotFound()
         {
             var paths = new[] { new DirectoryInfo(DateTime.Now.ToBinary().ToString()) };
-            Action action = () => new PluginLoader( paths, _logger);
-
-            action.Should().Throw<NoPluginsFoundException>();
+            new PluginLoader( paths, _logger);
 
             _logger.Last.EventId.Id.Should().Be(4004);
-            (_logger.Last.Exception as NoPluginsFoundException).PluginsFolders.First().FullName.Should().Be(paths.First().FullName);
+            _logger.Last.Message.Should().Be("No plugins loaded.");
         }
 
         [Fact]
@@ -60,7 +58,7 @@ namespace PluginTests
             var loader = new PluginLoader(_paths, _logger);
 
             var plugin = loader.GetPlugin(id, version);
-            var info = plugin.GetInfo();
+            var info = plugin.Info;
 
             info.ToString().Should().Be($"'{name}' ({id}@{version})");
 
@@ -70,8 +68,8 @@ namespace PluginTests
             info.FullId.Should().Be($"{id}@{version}");
             info.Implementing.Should().Be(implementing);
 
-            plugin.FullId.Should().Be($"{id}@{version}");
-            plugin.Implementing.Should().Be(implementing);
+            plugin.Info.FullId.Should().Be($"{id}@{version}");
+            plugin.Info.Implementing.Should().Be(implementing);
         }
     }
 }
