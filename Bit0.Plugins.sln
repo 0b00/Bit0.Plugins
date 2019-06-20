@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Registry", "Registry", "{1C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{5A0EFF7A-30B9-4E51-B204-33A05AC379D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bit0.Plugins.PluginLoader", "src\Plugins\Bit0.Plugins.PluginLoader\Bit0.Plugins.PluginLoader.csproj", "{62D1BAB3-8A3F-4220-8799-3993B8BD67D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bit0.Plugins.Loader", "src\Plugins\Bit0.Plugins.Loader\Bit0.Plugins.Loader.csproj", "{62D1BAB3-8A3F-4220-8799-3993B8BD67D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bit0.Registry.Core", "src\Registry\Bit0.Registry.Core\Bit0.Registry.Core.csproj", "{CE5007F3-2EB2-487D-8049-BC16AB85E004}"
 EndProject
