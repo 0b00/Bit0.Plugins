@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <RootNamespace>Bit0.Plugins.PluginLoader</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    
+    <RootNamespace>Bit0.Plugins.Loader</RootNamespace>
     <Description>Plugins loader for extending the applications. For host applications. Use Bit0.Plugins.Sdk for Plugins.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Plugins</PackageProjectUrl>
     <PackageTags>plugins, extensions</PackageTags>
 
-    <Version>2.0.0</Version>
-    <PackageVersion>$(Version)</PackageVersion>
+    <Version>3.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

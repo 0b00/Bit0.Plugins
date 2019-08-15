@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace Bit0.Plugins
@@ -19,5 +19,7 @@ namespace Bit0.Plugins
                 return _info;
             }
         }
+
+        public abstract IServiceCollection Register(IServiceCollection services);
     }
 }

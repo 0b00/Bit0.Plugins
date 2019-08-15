@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Bit0.Plugins.PluginLoader
+namespace Bit0.Plugins.Loader
 {
     public interface IPluginLoader
     {
