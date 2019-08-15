@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     
-    <RootNamespace>Bit0.Plugins</RootNamespace>
+    <RootNamespace>Bit0.Plugins.Sdk</RootNamespace>
     <Description>Sdk extending application for plugins. For plugins. Use Bit0.Plugins.Loader for host applications.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Plugins</PackageProjectUrl>
     <PackageTags>plugins, extensions</PackageTags>
