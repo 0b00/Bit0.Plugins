@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     
-    <RootNamespace>Bit0.Plugins.Sdk</RootNamespace>
-    <Description>Sdk extending application for plugins. For plugins. Use Bit0.Plugins.Loader for host applications.</Description>
+    <RootNamespace>Bit0.Plugins.Loader</RootNamespace>
+    <Description>Plugins loader for extending the applications. For host applications. Use Bit0.Plugins.Sdk for Plugins.</Description>
     <PackageProjectUrl>https://nullbit.se/project/Bit0.Plugins</PackageProjectUrl>
     <PackageTags>plugins, extensions</PackageTags>
 
@@ -15,5 +15,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
   </ItemGroup>
 
-  <Import Project="..\..\..\Common.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\Bit0.Plugins.Sdk\Bit0.Plugins.Sdk.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\Common.props" />
 </Project>

@@ -1,7 +1,4 @@
 # Bit0.Plugins
 
-- Bit0.Plugins.Core
-
-# Bit0.Registry
-
-- Bit0.Registry.Core
+- Bit0.Plugins.Loader
+- Bit0.Plugins.Sdk
