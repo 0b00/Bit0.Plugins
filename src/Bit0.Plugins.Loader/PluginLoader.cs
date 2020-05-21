@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -69,6 +70,7 @@ namespace Bit0.Plugins.Loader
             };
         }
 
+        [ExcludeFromCodeCoverage] // cannot test, it is safegaurd.
         private IEnumerable<Type> GetLoadableTypes(Assembly assembly)
         {
             if (assembly == null)

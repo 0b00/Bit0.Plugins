@@ -3,8 +3,10 @@ using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
@@ -20,7 +22,27 @@ namespace PluginTests
         public PluginLoaderTests(ITestOutputHelper output)
         {
             _logger = output.BuildLoggerFor<IPluginLoader>();
-            _path = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
+            _path = FindPluginsDir();
+        }
+
+        public static DirectoryInfo FindPluginsDir()
+        {
+            var wd = new DirectoryInfo(Environment.CurrentDirectory);
+            DirectoryInfo path = null;
+
+            while (path == null)
+            {
+                var dirs = wd.GetDirectories("plugins");
+                if (dirs.Any())
+                {
+                    path = dirs.First();
+                } else
+                {
+                    wd = wd.Parent;
+                }
+            }
+
+            return path;
         }
 
         [Fact]
@@ -34,12 +56,13 @@ namespace PluginTests
         public void PluginsCount()
         {
             var loader = new PluginLoader(new List<DirectoryInfo> { _path }, _logger);
-            loader.Plugins.Count.Should().Be(2);
+            loader.Plugins.Count.Should().Be(3);
         }
 
         [Theory]
-        [InlineData("dev-plugin1a", "1.0.0", "Dev Plugin 1a")]
+        [InlineData("dev-plugin1a", "1.1.0", "Dev Plugin 1a")]
         [InlineData("dev-plugin1b", "1.0.0", "Dev Plugin 1b")]
+        [InlineData("dev-plugin2" , "1.0.1", "Dev Plugin 2" )]
         public void GetPlugin(String id, String version, String name)
         {
             var loader = new PluginLoader(new List<DirectoryInfo> { _path }, _logger);
@@ -52,6 +75,22 @@ namespace PluginTests
             info.Id.Should().Be(id);
             info.Version.Should().Be(version);
             info.Name.Should().Be(name);
+            info.Implementing.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void NoPluginsInDir()
+        {
+            var dir = new DirectoryInfo(Path.GetTempFileName().Replace(".tmp", ""));
+            dir.Create();
+
+            var loader = new PluginLoader(new List<DirectoryInfo> { dir }, _logger);
+            loader.Plugins.Count.Should().Be(0);
+            _logger.Last.Message.Should().Be("No plugins loaded.");
+            _logger.Last.EventId.Id.Should().Be(4004);
+            _logger.Last.EventId.Name.Should().Be("NoPluginsFound");
+
+            dir.Delete();
         }
     }
 }

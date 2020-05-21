@@ -17,8 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\dev\DevPlugin1\DevPlugin1.csproj" />
     <ProjectReference Include="..\..\src\Bit0.Plugins.Loader\Bit0.Plugins.Loader.csproj" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="echo %25cd%25&#xD;&#xA;dotnet publish -o ..\..\plugins ..\..\dev\DevPlugin1\DevPlugin1.csproj&#xD;&#xA;echo dll &gt; ..\..\plugins\fake.dll" />
+  </Target>
 
 </Project>
