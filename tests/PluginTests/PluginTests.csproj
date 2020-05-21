@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="echo %25cd%25&#xD;&#xA;dotnet publish -o ..\..\plugins ..\..\dev\DevPlugin1\DevPlugin1.csproj&#xD;&#xA;echo dll &gt; ..\..\plugins\fake.dll" />
+    <Exec Command="dotnet publish -o ../../plugins ../../dev/DevPlugin1/DevPlugin1.csproj" />
   </Target>
 
 </Project>
