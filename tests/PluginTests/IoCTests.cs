@@ -36,7 +36,8 @@ namespace PluginTests
         public void IoC1()
         {
             IServiceCollection services = new ServiceCollection();
-            services.LoadPlugins(_pluginOptions);
+            services.AddSingleton(_pluginOptions);
+            services.LoadPlugins();
 
             var provider = services.BuildServiceProvider();
 
@@ -52,7 +53,8 @@ namespace PluginTests
             {
                 builder.SetMinimumLevel(LogLevel.Information);
             });
-            services.LoadPlugins(_pluginOptions);
+            services.AddSingleton(_pluginOptions);
+            services.LoadPlugins();
 
             var provider = services.BuildServiceProvider();
 

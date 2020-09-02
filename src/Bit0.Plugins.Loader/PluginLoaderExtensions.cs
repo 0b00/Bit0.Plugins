@@ -6,10 +6,11 @@ namespace Bit0.Plugins.Loader
 {
     public static class PluginLoaderExtensions
     {
-        public static IServiceCollection LoadPlugins(this IServiceCollection services, IPluginOptions options)
+        public static IServiceCollection LoadPlugins(this IServiceCollection services)
         {
             var provider = services.BuildServiceProvider();
             var logger = provider.GetService<ILogger<IPluginLoader>>();
+            var options = provider.GetService<IPluginOptions>();
 
             if (logger == null)
             {
