@@ -1,13 +1,14 @@
 ﻿using Bit0.Plugins.Loader;
+using Bit0.Plugins.Sdk;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,18 +20,23 @@ namespace PluginTests
     {
         private readonly ICacheLogger<IPluginLoader> _logger;
         private readonly DirectoryInfo _path;
+        private readonly IPluginOptions _pluginOptions;
 
         public IoCTests(ITestOutputHelper output)
         {
             _logger = output.BuildLoggerFor<IPluginLoader>();
             _path = PluginLoaderTests.FindPluginsDir();
+            _pluginOptions = new PluginOptions
+            {
+                Directories = new DirectoryInfo[] { _path }
+            };
         }
 
         [Fact]
         public void IoC1()
         {
             IServiceCollection services = new ServiceCollection();
-            services.LoadPlugins(new List<DirectoryInfo> { _path }, _logger);
+            services.LoadPlugins(_pluginOptions);
 
             var provider = services.BuildServiceProvider();
 
@@ -42,7 +48,11 @@ namespace PluginTests
         public void PluginWithDeps()
         {
             IServiceCollection services = new ServiceCollection();
-            services.LoadPlugins(new List<DirectoryInfo> { _path }, _logger);
+            services.AddLogging(builder =>
+            {
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+            services.LoadPlugins(_pluginOptions);
 
             var provider = services.BuildServiceProvider();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Bit0.Plugins.Sdk;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -12,10 +13,12 @@ namespace Bit0.Plugins.Loader
     {
         private readonly ILogger<IPluginLoader> _logger;
 
-        public PluginLoader(IEnumerable<DirectoryInfo> pluginsFolders, ILogger<IPluginLoader> logger)
+        public PluginLoader(IPluginOptions options, ILogger<IPluginLoader> logger)
         {
-            Setup();
             _logger = logger;
+            var pluginsFolders = options.Directories;
+
+            Setup();
 
             _logger.LogInformation(new EventId(4000), "Start loading plugins");
 

@@ -1,16 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bit0.Plugins.Sdk;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Bit0.Plugins.Loader
 {
     public static class PluginLoaderExtensions
     {
-        public static IServiceCollection LoadPlugins(this IServiceCollection services, IEnumerable<DirectoryInfo> pluginDirectories, ILogger<IPluginLoader> logger)
+        public static IServiceCollection LoadPlugins(this IServiceCollection services, IPluginOptions options)
         {
-            var pluginLoader = new PluginLoader(pluginDirectories, logger);
+            var provider = services.BuildServiceProvider();
+            var logger = provider.GetService<ILogger<IPluginLoader>>();
+
+            if (logger == null)
+            {
+                logger = new LoggerFactory().CreateLogger<IPluginLoader>();
+            }
+
+            var pluginLoader = new PluginLoader(options, logger);
             foreach (var plugin in pluginLoader.Plugins.Values)
             {
                 services = plugin.Register(services);

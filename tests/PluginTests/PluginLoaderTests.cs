@@ -1,13 +1,11 @@
 using Bit0.Plugins.Loader;
+using Bit0.Plugins.Sdk;
 using Divergic.Logging.Xunit;
 using FluentAssertions;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -18,11 +16,16 @@ namespace PluginTests
     {
         private readonly DirectoryInfo _path;
         private readonly ICacheLogger<IPluginLoader> _logger;
+        private readonly IPluginOptions _pluginOptions;
 
         public PluginLoaderTests(ITestOutputHelper output)
         {
             _logger = output.BuildLoggerFor<IPluginLoader>();
             _path = FindPluginsDir();
+            _pluginOptions = new PluginOptions
+            {
+                Directories = new DirectoryInfo[] { _path }
+            };
         }
 
         public static DirectoryInfo FindPluginsDir()
@@ -48,14 +51,14 @@ namespace PluginTests
         [Fact]
         public void PluginsFolder()
         {
-            var loader = new PluginLoader(new List<DirectoryInfo> { _path }, _logger);
+            var loader = new PluginLoader(_pluginOptions, _logger);
             loader.PluginsFolders.Should().Contain(_path);
         }
 
         [Fact]
         public void PluginsCount()
         {
-            var loader = new PluginLoader(new List<DirectoryInfo> { _path }, _logger);
+            var loader = new PluginLoader(_pluginOptions, _logger);
             loader.Plugins.Count.Should().Be(3);
         }
 
@@ -65,7 +68,7 @@ namespace PluginTests
         [InlineData("dev-plugin2" , "1.0.1", "Dev Plugin 2" )]
         public void GetPlugin(String id, String version, String name)
         {
-            var loader = new PluginLoader(new List<DirectoryInfo> { _path }, _logger);
+            var loader = new PluginLoader(_pluginOptions, _logger); ;
 
             var plugin = loader.GetPlugin(id, version);
             var info = plugin.Info;
@@ -84,7 +87,10 @@ namespace PluginTests
             var dir = new DirectoryInfo(Path.GetTempFileName().Replace(".tmp", ""));
             dir.Create();
 
-            var loader = new PluginLoader(new List<DirectoryInfo> { dir }, _logger);
+            var loader = new PluginLoader(new PluginOptions
+            {
+                Directories = new DirectoryInfo[] { dir }
+            }, _logger);
             loader.Plugins.Count.Should().Be(0);
             _logger.Last.Message.Should().Be("No plugins loaded.");
             _logger.Last.EventId.Id.Should().Be(4004);
