@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Common.props = Common.props
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
+		Solution.props = Solution.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{FC08E61B-2A13-4B02-A176-95D13FB9C738}"
@@ -25,6 +26,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bit0.Plugins.Loader", "src\Bit0.Plugins.Loader\Bit0.Plugins.Loader.csproj", "{DE7CB97E-FE46-49EC-9F01-A63072B1B6E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bit0.Plugins.Sdk", "src\Bit0.Plugins.Sdk\Bit0.Plugins.Sdk.csproj", "{8A029FEB-9A2E-4A4E-91E6-AC61CE65E4AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{D20DC011-6AB1-40A8-97C6-0DF5821A333A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{1ACCAAC9-DAC8-4E3F-A25F-6AB58B7C2938}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\package.yml = .github\workflows\package.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +65,8 @@ Global
 		{58FB9B54-428E-408D-9DDC-EC58D007868D} = {49FB92AB-68CE-4575-B817-5E1FC156CA48}
 		{DE7CB97E-FE46-49EC-9F01-A63072B1B6E7} = {FC08E61B-2A13-4B02-A176-95D13FB9C738}
 		{8A029FEB-9A2E-4A4E-91E6-AC61CE65E4AD} = {FC08E61B-2A13-4B02-A176-95D13FB9C738}
+		{D20DC011-6AB1-40A8-97C6-0DF5821A333A} = {D1D6A1CA-7035-4BB6-BBA4-862F1EBC39D7}
+		{1ACCAAC9-DAC8-4E3F-A25F-6AB58B7C2938} = {D20DC011-6AB1-40A8-97C6-0DF5821A333A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F729AF24-C7AD-4895-B1F5-7BDA64720979}
