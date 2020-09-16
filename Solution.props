@@ -1,7 +1,7 @@
 <Project>  
   <PropertyGroup>
     <Version>5.2</Version>
-    <PackageProjectUrl Condition="'$(PackageProjectUrl)'==''">https://nullbit.se/Plugins</PackageProjectUrl>
+    <PackageProjectUrl Condition="'$(PackageProjectUrl)'==''">https://github.com/0b00/Bit0.Plugins</PackageProjectUrl>
     <RepositoryUrl>https://github.com/0b00/Bit0.Plugins</RepositoryUrl>
   </PropertyGroup>
 </Project>

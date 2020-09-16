@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Bit0.Plugins.Loader</RootNamespace>
     <Description>Plugins loader for extending the applications. For host applications. Use Bit0.Plugins.Sdk for Plugins.</Description>
-    <PackageTags>plugins, extensions</PackageTags>
+    <PackageTags>plugins; extensions; loader</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
